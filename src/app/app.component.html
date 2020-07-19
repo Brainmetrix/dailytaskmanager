@@ -1,0 +1,211 @@
+<nav>
+  <div class="nav-wrapper">
+    <a href="#!" class="brand-logo">Task Manager</a>
+    <a href="#" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+    <ul class="right hide-on-med-and-down">
+      <li><a class="waves-effect waves-light btn" (click)="openModal();">Add New Task <i
+            class="material-icons left">add</i></a></li>
+    </ul>
+  </div>
+</nav>
+
+<ul class="sidenav" id="mobile-demo">
+  <li>
+    <div class="user-view">
+      <div class="background">
+        <img src="../assets/bg.jpg">
+      </div>
+      <a href="#user"><img class="circle" src="../assets/shortPic.jpg"></a>
+      <a href="#name"><span class="white-text name">Vivek Singh</span></a>
+      <a href="#email"><span class="white-text email">vsingh616@gmail.com</span></a>
+      <a href="tel:+917903935375"><span class="white-text email">+91-7903935375</span></a>
+    </div>
+  </li>
+  <li>
+    <div class="divider"></div>
+  </li>
+  <li><a href="http://tiny.cc/vks" target="_blank"><span class="black-text email">Visit my profile</span></a></li>
+  <li><a href="https://www.linkedin.com/in/vivek-kumar-singh-88318a100/" target="_blank"><span
+        class="black-text email">LinkedIn</span></a></li>
+  <li><a class="waves-effect waves-light btn" (click)="openModal();">Add New Task</a></li>
+</ul>
+<br>
+<!-- Task Container -->
+<div *ngIf="taskArr?.length > 0" style="text-align:right; margin-right: 3%;">
+
+  <span class="dot tooltipped" data-position="top" data-tooltip="Completed task %"
+    [ngClass]="(score < 33) ? 'red' : (score > 33 && score < 66 ) ? 'amber' : 'green'">
+    <p class="score">{{score | number}} %</p>
+  </span>
+</div>
+
+<div class="flex-container">
+  <div style="border-right: 1px solid royalblue;">
+    <h5 style="background-color: #ff4d4f;">Pending</h5>
+    <hr style="width: 300px;">
+    <ng-container *ngFor="let data of taskArr; let i = index">
+      <div class="card" *ngIf="data?.status === 'Pending'" style="background-color: #ff4d4f; border-color: #ff4d4f;">
+        <div class="my-container">
+          <div style="text-align:left; margin-left: 10px">
+            <span class="priority">{{data.priority === 'High' ? '↑' : data.priority === 'Normal' ? '—' : '↓'}}
+            </span>&nbsp;&nbsp;&nbsp;&nbsp;
+            <!-- ({{data?.date | date}}) -->
+            <span class="title">{{data?.title}} ({{data?.date | date}})</span>
+            <span class="action">
+              <a class="waves-effect waves-light tooltipped" data-position="top" data-tooltip="Edit task"
+                (click)="editTask(data); ">
+                <i class="material-icons left icon-size">edit</i></a>
+              <span style="color: white;">| </span>
+              <a class="waves-effect waves-light tooltipped" data-position="top" data-tooltip="Delete task"
+                (click)="deleteTask(i)">
+                <i class="material-icons left icon-size">delete</i></a>
+            </span>
+          </div>
+
+        </div>
+      </div>
+    </ng-container>
+  </div>
+  <div style="border-right: 1px solid royalblue;">
+    <h5 style="background-color: #faad14;">In Process</h5>
+    <hr style="width: 300px;">
+    <ng-container *ngFor="let data of taskArr; let i = index">
+      <div class="card" *ngIf="data?.status === 'Progress'" style="background-color: #faad14; border-color: #faad14;">
+        <div class="my-container">
+          <div style="text-align:left; margin-left: 10px">
+            <span class="priority">{{data.priority === 'High' ? '↑' : data.priority === 'Normal' ? '—' : '↓'}}
+            </span>&nbsp;&nbsp;&nbsp;&nbsp;
+            <span class="title">{{data?.title}}</span>
+            <span class="action">
+              <a class="waves-effect waves-light tooltipped" data-position="top" data-tooltip="Edit task"
+                (click)="editTask(data); ">
+                <i class="material-icons left icon-size">edit</i></a>
+              <span style="color: white;">| </span>
+              <a class="waves-effect waves-light tooltipped" data-position="top" data-tooltip="Delete task"
+                (click)="deleteTask(i)">
+                <i class="material-icons left icon-size">delete</i></a>
+            </span>
+          </div>
+
+        </div>
+      </div>
+    </ng-container>
+  </div>
+  <div>
+    <h5 style="background-color: #52c41a;"> Completed</h5>
+    <hr style="width: 300px;">
+    <ng-container *ngFor="let data of taskArr; let i = index">
+      <div class="card" *ngIf="data?.status === 'Completed'" style="background-color: #52c41a; border-color: #52c41a;">
+        <div class="my-container">
+          <div style="text-align:left; margin-left: 10px">
+            <span class="priority">{{data.priority === 'High' ? '↑' : data.priority === 'Normal' ? '—' : '↓'}}
+            </span>&nbsp;&nbsp;&nbsp;&nbsp;
+            <span class="title">{{data?.title}}</span>
+            <!-- <span class="action">
+                <a class="waves-effect waves-light tooltipped" data-position="top" data-tooltip="Edit task"
+                  (click)="editTask(data); ">
+                  <i class="material-icons left icon-size">edit</i></a>
+                <span style="color: white;">| </span>
+                <a class="waves-effect waves-light tooltipped" data-position="top" data-tooltip="Delete task"
+                  (click)="deleteTask(i)">
+                  <i class="material-icons left icon-size">delete</i></a>
+              </span> -->
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+</div>
+
+<div id="myModal" class="modal">
+
+  <!-- Modal content -->
+  <div class="modal-content">
+    <div class="modal-title">Add / Edit Task</div>
+    <hr style="width: 200px;">
+    <form [formGroup]="taskManager" (ngSubmit)="addTask()">
+      <div>
+        <label for="title">Title</label>
+        <input id="title" type="text" [(ngModel)]="title" formControlName="title"
+          [ngClass]="{ 'is-invalid': (submitted || f.title.touched) && (f.title.errors) }">
+
+        <span *ngIf="(submitted || f.title.touched) && (f.title.errors)" class="validate">
+          <span *ngIf="f.title.errors.required">Title is required</span>
+        </span>
+      </div>
+
+      <div>
+        <label for="description">Description</label>
+        <textarea class="materialize-textarea" id="description" [(ngModel)]="desc" formControlName="desc"
+          [ngClass]="{ 'is-invalid': (submitted || f.desc.touched) && (f.desc.errors) }"></textarea>
+        <span *ngIf="(submitted || f.desc.touched) && (f.desc.errors)" class="validate">
+          <span *ngIf="f.desc.errors.required">Description is required</span>
+        </span>
+      </div>
+
+      <div>
+        <label for="date">Choose Date</label>
+        <!-- <input class="datepicker" id="date" type="text" [(ngModel)]="date" formControlName="date"
+          [ngClass]="{ 'is-invalid': (submitted || f.date.touched) && (f.date.errors) }"> -->
+        <input id="date" type="date" [(ngModel)]="date" formControlName="date"
+          [ngClass]="{ 'is-invalid': (submitted || f.date.touched) && (f.date.errors) }">
+        <span *ngIf="(submitted || f.date.touched) && f.date.errors" class="validate">
+          <span *ngIf="f.date.errors.required">Date is required</span>
+        </span>
+      </div>
+
+      <div>
+        <label>Select Priority</label>
+        <select [(ngModel)]="priority" formControlName="priority" required
+          [ngClass]="{ 'is-invalid': (submitted || f.priority.touched) && (f.priority.errors) }">
+          <option value="High">High</option>
+          <option value="Normal">Normal</option>
+          <option value="Low">Low</option>
+        </select>
+        <span *ngIf="(submitted || f.priority.touched) && (f.priority.errors)" class="validate">
+          <span *ngIf="f.priority.errors.required">Priority is required</span>
+        </span>
+      </div>
+
+      <div>
+        <label>Select Status</label>
+        <select [(ngModel)]="status" formControlName="status" required
+          [ngClass]="{ 'is-invalid': (submitted || f.status.touched) && (f.status.errors) }">
+          <option value="Pending">Pending</option>
+          <option value="Progress">Progress</option>
+          <option value="Completed">Completed</option>
+        </select>
+        <span *ngIf="(submitted || f.status.touched) && (f.status.errors)" class="validate">
+          <span *ngIf="f.status.errors.required">Status is required</span>
+        </span>
+      </div>
+
+      <div>
+
+        <button class="btn waves-effect waves-light btn-small" name="save">
+          {{selectedItem?.isEdit ? 'Update': 'Submit'}}
+        </button> &nbsp;&nbsp;&nbsp;
+
+        <button class="btn waves-effect waves-light btn-small danger" name="cancel" (click)="closeModal()">
+          Cancel
+        </button>
+      </div>
+
+    </form>
+  </div>
+
+</div>
+
+<div class="fixed-action-btn">
+  <a class="btn-floating btn-large blue ">
+    <i class="large material-icons">add</i>
+  </a>
+  <ul>
+    <li><a class="btn-floating green tooltipped" data-position="left" data-tooltip="Create Task"
+        (click)="openModal();"><i class="material-icons">add</i></a></li>
+    <li><a href="http://tiny.cc/vks" target="_blank" class="btn-floating red tooltipped" data-position="left"
+        data-tooltip="View Profile"><i class="material-icons">account_circle</i></a></li>
+    <li><a href="../assets/Vivek Singh.docx" download class="btn-floating blue tooltipped" data-position="left"
+        data-tooltip="Download Resume"><i class="material-icons">attach_file</i></a></li>
+  </ul>
+</div>
